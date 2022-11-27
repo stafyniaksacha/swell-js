@@ -320,6 +320,18 @@ async function payPalButton(request, cart, payMethods, params) {
     const successHandler = get(params, 'paypal.onSuccess');
     return isFunction(successHandler) && successHandler();
   };
+  const onInit = (data, actions) => {
+    const initHandler = get(params, 'paypal.onInit');
+    return isFunction(initHandler) && initHandler(data, actions);
+  };
+  const onClick = (data, actions) => {
+    const clickHandler = get(params, 'paypal.onClick');
+    return isFunction(clickHandler) && clickHandler(data, actions);
+  };
+  const onCancel = (data, actions) => {
+    const cancelHandler = get(params, 'paypal.onCancel');
+    return isFunction(cancelHandler) && cancelHandler(data, actions);
+  };
 
   if (!(capture_total > 0)) {
     throw new Error(
@@ -339,6 +351,9 @@ async function payPalButton(request, cart, payMethods, params) {
           label: 'paypal',
           tagline: false,
         },
+        onInit,
+        onClick,
+        onCancel,
         createOrder: (data, actions) =>
           actions.order.create({
             intent: 'AUTHORIZE',
